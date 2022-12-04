@@ -62,3 +62,5 @@ int write_to_buff(char **buff, char *str, int buff_index) {
     buff_index++;
     return buff_index;
 }
+
+{"\"This", "is", "val", "./././", "2", "./././"}

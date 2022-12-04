@@ -6,31 +6,37 @@
 
 
 // function declarations
-void display_file (char *filename);
-void remove_commments(char* filename);
-void remove_blank_lines (char* filename);
-void macro_expansion (char* filename);
+void display_file(char *filename);
+
+void remove_commments(char *filename);
+
+void remove_blank_lines(char *filename);
+
+void macro_expansion(char *filename);
 
 // helper functions
 void identify_macros(char *filename);
+
 void extract_macros(char *str);
+
 int write_to_buff(char **buff, char *str, int buff_index);
+
 void print_buff(char **buff);
 
 
 char *macro_head[MAX_CHARS] = {};
 char *macro_body[MAX_CHARS] = {};
-char ** macros[2] = {macro_head, macro_body};
+char **macros[2] = {macro_head, macro_body};
 int macro_head_index = 0;
 int macro_body_index = 0;
 
 
 int main(int argc, char *argv[]) {
     printf("\n__________________________________________\n\n"
-                    "             Abdullah Baig          \n"
-                    "               231485698          \n"
-                    "             Assignment 1          \n"
-                  "\n__________________________________________\n\n");
+           "             Abdullah Baig          \n"
+           "               231485698          \n"
+           "             Assignment 1          \n"
+           "\n__________________________________________\n\n");
     if (argc == 2) {
         char *file_name = argv[1];
         FILE *in_file = fopen(file_name, "r");
@@ -47,7 +53,7 @@ int main(int argc, char *argv[]) {
         printf("\n__________________________________________\n\n");
 
         // 2 - Remove Blank Lines
-        char* file_without_blanks = strcat(file_name, "_without_blanks.txt");
+        char *file_without_blanks = strcat(file_name, "_without_blanks.txt");
         remove_blank_lines(file_without_blanks);
 
         printf("------------------ File Without Blank Lines ------------------\n\n");
@@ -55,7 +61,7 @@ int main(int argc, char *argv[]) {
         printf("\n__________________________________________\n\n");
 
         // 3 - Strip comments
-        char* file_without_comments = strcat(file_name, "_without_comments.txt");
+        char *file_without_comments = strcat(file_name, "_without_comments.txt");
         remove_commments(file_without_comments);
 
         printf("------------------ File Without Comments ------------------\n\n");
@@ -63,12 +69,9 @@ int main(int argc, char *argv[]) {
         printf("\n__________________________________________\n\n");
 
         // 4 - Macro Expansion
-        char* file_with_macro_expansion = strcat(file_name, "_out.txt");
+        printf("------------------ Macro Expansion ------------------\n\n");
+        char *file_with_macro_expansion = strcat(file_name, "_out.txt");
         macro_expansion(file_with_macro_expansion);
-
-        printf("------------------ File Without Comments ------------------\n\n");
-        display_file(file_without_comments);
-        printf("\n__________________________________________\n\n");
 
 
     } else {
@@ -78,8 +81,7 @@ int main(int argc, char *argv[]) {
 }
 
 
-
-void macroExpansion(char* filename) {
+void macroExpansion(char *filename) {
     FILE *write_file = fopen(strcat(filename, "_out.c"), "w");
     identify_macros(filename);
     FILE *read_file = fopen(strcat(filename, "_removed_macros.c"), "r");
@@ -89,37 +91,40 @@ void macroExpansion(char* filename) {
         int macro_head_len = strlen(macro_head[i]);
         int c;
         int body_counter = 0;
-        int body_start_index = 0;
-        int body_end_index = 0;
+        int current_body_end = 0;
+        int next_body_start = 0;
 
         while ((fgets(buff, MAX_CHARS, read_file))) {
-            for (int i = 0; i < strlen(buff); i++) {
-                if (buff[i] == macro_head[i]) {
-                    int j = 0;
-                    while (j < macro_head_len) {
-                        if (buff[i + j] == macro_head[i + j]) {
-                            j++;
+            for (int j = 0; j < strlen(buff); j++) {
+                if (buff[j] == macro_head[i][0]) {
+                    int k = 0;
+                    while (k < macro_head_len) {
+                        if (buff[j + k] == macro_head[i][k]) {
+                            k++;
                         } else {
                             break;
                         }
                     }
-                    if (j == macro_head_len) {
-                        while (body_counter != i) {
+                    if (k == macro_head_len) {
+                        int l = 0;
+                        current_body_end = l;
 
-                            fputc(macro_body[i][body_counter], write_file);
-                            body_counter++;
+                        while (body_counter != i) {
+                            if (strcmp(macro_body[l], "./././")) {
+                                body_counter++;
+                                next_body_start = l + 1;
+                            }
                         }
-                        fprintf(write_file, "%s", macro_body[i]);
                     }
                 }
             }
+            fputc(macro_body[i][body_counter], write_file);
         }
     }
-
 }
 
 
-void remove_commments(char* filename) {
+void remove_commments(char *filename) {
     FILE *read_file = fopen(filename, "r");
     FILE *write_file = fopen(strcat(filename, "_without_comments.txt"), "w");
     char buff[MAX_CHARS];
@@ -130,8 +135,8 @@ void remove_commments(char* filename) {
 
         for (int i = 0; i < strlen(buff); i++) {
             switch (buff[i]) {
-                case ('/') :{
-                    if (buff[i+1] == '/') {
+                case ('/') : {
+                    if (buff[i + 1] == '/') {
                         break;
                     }
                 }
@@ -158,10 +163,10 @@ void remove_commments(char* filename) {
     fclose(write_file);
 }
 
-void display_file (char *filename) {
+void display_file(char *filename) {
     FILE *fp = fopen(filename, "r");
     int c;
-    while ( (c = getc(fp)) != EOF) {
+    while ((c = getc(fp)) != EOF) {
         printf("%c", c);
     }
     fclose(fp);
@@ -175,15 +180,15 @@ void write_line_no(FILE *write_file, int line_no) {
 }
 
 
-void remove_blank_lines (char* filename) {
+void remove_blank_lines(char *filename) {
     FILE *read_file = fopen(filename, "r");
     FILE *write_file = fopen(strcat(filename, "_without_blanks.txt"), "w");
     char buff[MAX_CHARS];
 
-    while ( (fgets(buff, MAX_CHARS, read_file))) {
+    while ((fgets(buff, MAX_CHARS, read_file))) {
         int char_detected = 0;
 
-        for (int i=0; i < strlen(buff); i++) {
+        for (int i = 0; i < strlen(buff); i++) {
 
             if (char_detected == 1) {
                 fputc(buff[i], write_file);
@@ -219,16 +224,17 @@ void identify_macros(char *filename) {
     FILE *write_file = fopen(strcat(filename, "_removed_macros.c"), "w");
     char str[MAX_CHARS];
 
-    while ( (fgets(str, MAX_CHARS, read_file))) {
+    while ((fgets(str, MAX_CHARS, read_file))) {
 
-        for (int i=0; i < strlen(str); i++) {
+        for (int i = 0; i < strlen(str); i++) {
             switch (str[i]) {
                 case ('#'): {
 
-                    for (int j=i; j < strlen(str); j++) {
+                    for (int j = i; j < strlen(str); j++) {
                         switch (str[j]) {
                             case ('d'): {
-                                if (str[j+1] == 'e' && str[j+2] == 'f' && str[j+3] == 'i' && str[j+4] == 'n' && str[j+5] == 'e' && str[j+6] == '\t') {
+                                if (str[j + 1] == 'e' && str[j + 2] == 'f' && str[j + 3] == 'i' && str[j + 4] == 'n' &&
+                                    str[j + 5] == 'e' && str[j + 6] == '\t') {
                                     extract_macros(str);
                                     break;
                                 }
@@ -273,12 +279,6 @@ void extract_macros(char *str) {
     }
 
     macro_body_index = write_to_buff(macro_body, "./././", macro_body_index);
-//    printf("\nMacro Head: \n");
-//    print_buff(macro_head);
-//    printf("\nMacro Body: \n");
-//    print_buff(macro_body);
-//    macros[0] = macro_head;
-//    macros[1] = macro_body;
 }
 
 void print_buff(char **buff) {
