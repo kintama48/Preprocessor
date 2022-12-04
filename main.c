@@ -186,29 +186,20 @@ void remove_blank_lines(char *filename) {
     char buff[MAX_CHARS];
 
     while ((fgets(buff, MAX_CHARS, read_file))) {
-        int char_detected = 0;
-
         for (int i = 0; i < strlen(buff); i++) {
+            switch (buff[i]) {
+                case ('\t'): {
+                    continue;
+                }
 
-            if (char_detected == 1) {
-                fputc(buff[i], write_file);
-            } else {
-                switch (buff[i]) {
-                    case ('\t'): {
-                        if (char_detected == 0) {
-                            continue;
-                        }
-                    }
+                case ('\n'): {
+                    continue;
+                }
 
-                    case ('\n'): {
-                        if (char_detected == 0) {
-                            continue;
-                        }
-                    }
-
-                    default: {
+                default: {
+                    for (int j = 0; j < strlen(buff); j++) {
                         fputc(buff[i], write_file);
-                        char_detected = 1;
+                        break;
                     }
                 }
             }
@@ -277,7 +268,6 @@ void extract_macros(char *str) {
         }
         temp_str = strtok(NULL, " ");
     }
-
     macro_body_index = write_to_buff(macro_body, "./././", macro_body_index);
 }
 
