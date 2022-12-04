@@ -7,17 +7,18 @@
 
 // function declarations
 void display_file (char *filename);
-void write_line_no(FILE *write_file, int line_no);
 void remove_commments(char* filename);
 void remove_blank_lines (char* filename);
-char* identify_macros(char *filename);
+void* identify_macros(char *filename);
+
+// helper functions
 void extract_macros(char *str);
 int write_to_buff(char **buff, char *str, int buff_index);
 void print_buff(char **buff);
 
 
-char *macro_head[100] = {};
-char *macro_body[100] = {};
+char *macro_head[MAX_CHARS] = {};
+char *macro_body[MAX_CHARS] = {};
 char ** macros[2] = {macro_head, macro_body};
 int macro_head_index = 0;
 int macro_body_index = 0;
@@ -62,7 +63,7 @@ int main(int argc, char *argv[]) {
 
         // 4 - Macro Expansion
         char* file_with_macro_expansion = strcat(file_name, "_out.txt");
-        expand_macros(file_with_macro_expansion);
+        identify_macros(file_with_macro_expansion);
 
         printf("------------------ File Without Comments ------------------\n\n");
         display_file(file_without_comments);
@@ -174,7 +175,7 @@ void remove_blank_lines (char* filename) {
 }
 
 
-char* identify_macros(char *filename) {
+void identify_macros(char *filename) {
     FILE *read_file = fopen(filename, "r");
     FILE *write_file = fopen(strcat(filename, "_out.c"), "w");
     char str[MAX_CHARS];
@@ -189,22 +190,20 @@ char* identify_macros(char *filename) {
                         switch (str[j]) {
                             case ('d'): {
                                 if (str[j+1] == 'e' && str[j+2] == 'f' && str[j+3] == 'i' && str[j+4] == 'n' && str[j+5] == 'e' && str[j+6] == ' ') {
-                                    e
-                                } else {
-                                    printf("Invalid Macro Definition: '%s'", str);
+                                    extract_macros(str);
+                                    break;
                                 }
                             }
                         }
                     }
+                    break;
                 }
                 default: {
-                    continue;
+                    fputc(str[i], write_file);
                 }
             }
         }
     }
-    printf("%s\n", copy + 1);
-    return copy + 1;
 }
 
 void extract_macros(char *str) {
@@ -235,12 +234,12 @@ void extract_macros(char *str) {
     }
 
     macro_body_index = write_to_buff(macro_body, "./././", macro_body_index);
-    printf("\nMacro Head: \n");
-    print_buff(macro_head);
-    printf("\nMacro Body: \n");
-    print_buff(macro_body);
-    macros[0] = macro_head;
-    macros[1] = macro_body;
+//    printf("\nMacro Head: \n");
+//    print_buff(macro_head);
+//    printf("\nMacro Body: \n");
+//    print_buff(macro_body);
+//    macros[0] = macro_head;
+//    macros[1] = macro_body;
 }
 
 void print_buff(char **buff) {
