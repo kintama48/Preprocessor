@@ -9,9 +9,10 @@
 void display_file (char *filename);
 void remove_commments(char* filename);
 void remove_blank_lines (char* filename);
-void* identify_macros(char *filename);
+void macro_expansion (char* filename);
 
 // helper functions
+void identify_macros(char *filename);
 void extract_macros(char *str);
 int write_to_buff(char **buff, char *str, int buff_index);
 void print_buff(char **buff);
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
 
         // 4 - Macro Expansion
         char* file_with_macro_expansion = strcat(file_name, "_out.txt");
-        identify_macros(file_with_macro_expansion);
+        macro_expansion(file_with_macro_expansion);
 
         printf("------------------ File Without Comments ------------------\n\n");
         display_file(file_without_comments);
@@ -78,6 +79,44 @@ int main(int argc, char *argv[]) {
 
 
 
+void macroExpansion(char* filename) {
+    FILE *write_file = fopen(strcat(filename, "_out.c"), "w");
+    identify_macros(filename);
+    FILE *read_file = fopen(strcat(filename, "_removed_macros.c"), "r");
+    char buff[MAX_CHARS];
+
+    for (int i = 0; i < macro_head_index; i++) {
+        int macro_head_len = strlen(macro_head[i]);
+        int c;
+        int body_counter = 0;
+        int body_start_index = 0;
+        int body_end_index = 0;
+
+        while ((fgets(buff, MAX_CHARS, read_file))) {
+            for (int i = 0; i < strlen(buff); i++) {
+                if (buff[i] == macro_head[i]) {
+                    int j = 0;
+                    while (j < macro_head_len) {
+                        if (buff[i + j] == macro_head[i + j]) {
+                            j++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (j == macro_head_len) {
+                        while (body_counter != i) {
+
+                            fputc(macro_body[i][body_counter], write_file);
+                            body_counter++;
+                        }
+                        fprintf(write_file, "%s", macro_body[i]);
+                    }
+                }
+            }
+        }
+    }
+
+}
 
 
 void remove_commments(char* filename) {
@@ -150,7 +189,7 @@ void remove_blank_lines (char* filename) {
                 fputc(buff[i], write_file);
             } else {
                 switch (buff[i]) {
-                    case (' '): {
+                    case ('\t'): {
                         if (char_detected == 0) {
                             continue;
                         }
@@ -177,7 +216,7 @@ void remove_blank_lines (char* filename) {
 
 void identify_macros(char *filename) {
     FILE *read_file = fopen(filename, "r");
-    FILE *write_file = fopen(strcat(filename, "_out.c"), "w");
+    FILE *write_file = fopen(strcat(filename, "_removed_macros.c"), "w");
     char str[MAX_CHARS];
 
     while ( (fgets(str, MAX_CHARS, read_file))) {
@@ -189,7 +228,7 @@ void identify_macros(char *filename) {
                     for (int j=i; j < strlen(str); j++) {
                         switch (str[j]) {
                             case ('d'): {
-                                if (str[j+1] == 'e' && str[j+2] == 'f' && str[j+3] == 'i' && str[j+4] == 'n' && str[j+5] == 'e' && str[j+6] == ' ') {
+                                if (str[j+1] == 'e' && str[j+2] == 'f' && str[j+3] == 'i' && str[j+4] == 'n' && str[j+5] == 'e' && str[j+6] == '\t') {
                                     extract_macros(str);
                                     break;
                                 }
