@@ -86,63 +86,63 @@ int main(int argc, char *argv[]) {
 }
 
 
-//void macro_expansion(char *filename) {
-//    FILE *write_file = fopen("out.c", "w");
-//    identify_macros(filename);
-//    FILE *read_file = fopen("_removed_macros.txt", "r");
-//    char buff[MAX_CHARS];
-//    macro_body_index;
-//    macro_head;
-//    macro_body;
-//
-//    for (int i = 0; i < macro_head_index; i++) {
-//        int macro_head_len = strlen(macro_head[i]);
-//        int macro_detected = 0;
-//
-//        while ((fgets(buff, MAX_CHARS, read_file))) {
-//            for (int j = 0; j < strlen(buff); j++) {
-//                if (buff[j] == macro_head[i][0]) {
-//                    int k = 0;
-//                    while (k < macro_head_len) {
-//                        if (buff[j + k] == macro_head[i][k]) {
-//                            k++;
-//                        } else {
-//                            macro_detected = 1;
-//                            break;
-//                        }
-//                    }
-//                    if (macro_detected == 1) {
-//                        int body_start_index = 0;
-//                        int body_stop_index = 0;
-//                        int body_index = 0;
-//                        int body_counter = 0;
-//
-//                        while (body_counter < i) {
-//                            if (strcmp(macro_body[body_index], "./././") == 0) {
-//                                body_counter++;
-//                            }
-//                            body_index++;
-//                        }
-//                        body_start_index = body_index + 1;
-//                        while (strcmp(macro_body[body_index], "./././") != 0) {
-//                            body_index++;
-//                        }
-//                        body_stop_index = body_index - 1;
-//
-//                        for (int l = body_start_index; l < body_stop_index; l++) {
-//                            fprintf(write_file, "%s", macro_body[l]);
-//                        }
-//                        break;
-//                    } else {
-//                        fputc(buff[j], write_file);
-//                    }
-//                } else {
-//                    fputc(buff[j], write_file);
-//                }
-//            }
-//        }
-//    }
-//}
+void macro_expansion(char *filename) {
+    FILE *write_file = fopen("out.c", "w");
+    identify_macros(filename);
+    FILE *read_file = fopen("_removed_macros.txt", "r");
+    char buff[MAX_CHARS];
+    macro_body_index;
+    macro_head;
+    macro_body;
+
+    for (int i = 0; i < macro_head_index; i++) {
+        int macro_head_len = strlen(macro_head[i]);
+        int macro_detected = 0;
+
+        while ((fgets(buff, MAX_CHARS, read_file))) {
+            for (int j = 0; j < strlen(buff); j++) {
+                if (buff[j] == macro_head[i][0]) {
+                    int k = 0;
+                    while (k < macro_head_len) {
+                        if (buff[j + k] == macro_head[i][k]) {
+                            k++;
+                        } else {
+                            macro_detected = 1;
+                            break;
+                        }
+                    }
+                    if (macro_detected == 1) {
+                        int body_start_index = 0;
+                        int body_stop_index = 0;
+                        int body_index = 0;
+                        int body_counter = 0;
+
+                        while (body_counter < i) {
+                            if (strcmp(macro_body[body_index], "./././") == 0) {
+                                body_counter++;
+                            }
+                            body_index++;
+                        }
+                        body_start_index = body_index + 1;
+                        while (strcmp(macro_body[body_index], "./././") != 0) {
+                            body_index++;
+                        }
+                        body_stop_index = body_index - 1;
+
+                        for (int l = body_start_index; l < body_stop_index; l++) {
+                            fprintf(write_file, "%s", macro_body[l]);
+                        }
+                        break;
+                    } else {
+                        fputc(buff[j], write_file);
+                    }
+                } else {
+                    fputc(buff[j], write_file);
+                }
+            }
+        }
+    }
+}
 
 void macroExpansion(){
     /*
@@ -407,15 +407,9 @@ void remove_commments(char *filename) {
                 }
                 break;
             } else if (buff[i] == '/' && buff[i+1] == '*'){
-                if (char_detected == 1){
-                    fputc('\n', write_file);
-                }
                 comment_start = 1;
                 break;
             } else if (buff[i] == '*' && buff[i+1] == '/'){
-                if (char_detected == 1){
-                    fputc('\n', write_file);
-                }
                 comment_start = 0;
                 break;
             } else if (comment_start == 0) {
